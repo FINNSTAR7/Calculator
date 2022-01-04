@@ -51,9 +51,12 @@ function makeT(probabilities, combs, T, T0)
 	T[1][1] = O
 	local total = 0
 	for j = 1, probabilities.numP do
-		T0[1][j + 1] = probabilities[j]
-		T[1][j + 1] = probabilities[j]
-		total = total + probabilities[j]
+		T0[1][j+1] = probabilities[j]
+		T[1][j+1] = probabilities[j]
+		total = total + T0[1][j]
+	end
+	if probabilities.numP ~= 1 then
+		total = total + T0[1][probabilities.numP + 1]
 	end
 
 	-- R
