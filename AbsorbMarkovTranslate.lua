@@ -46,7 +46,7 @@ function makeT(probabilities, combs, T, T0)
 	local O = 1 - probabilities.sum
 	local sz = T0.size
 
-	-- Q
+	-- Q[1]
 	T0[1][1] = O
 	T[1][1] = O
 	local total = 0
@@ -55,18 +55,21 @@ function makeT(probabilities, combs, T, T0)
 		T[1][j+1] = probabilities[j]
 		total = total + T0[1][j]
 	end
-	if probabilities.numP ~= 1 then
-		total = total + T0[1][probabilities.numP + 1]
-	end
 
 	-- R
-	T0[1][sz] = 1 - total
-	T[1][sz] = 1 - total
+	if probabilities.numP == 1 then
+		T0[1][sz] = 1.0 - total
+		T[1][sz] = 1.0 - total
+	else
+		T0[1][sz] = 0
+		T[1][sz] = 0
+	end
 
 	-- I
 	T0[sz][sz] = 1
 	T[sz][sz] = 1
 
+	-- Q[2:end]
 	local str
 	for i = 2, #Tq do
 		total = 0
@@ -86,9 +89,12 @@ function makeT(probabilities, combs, T, T0)
 			end
 		end
 
+		-- Q[i][i]
+		T0[i][i] = O
+		T[i][i] = O
 		for c in Tq[i]:gmatch(".") do
-			T0[i][i] = T0[i][i] + probabilities[c] + O
-			T[i][i] = T[i][i] + probabilities[c] + O
+			T0[i][i] = T0[i][i] + probabilities[c]
+			T[i][i] = T[i][i] + probabilities[c]
 		end
 
 		T0[i][sz] = 1 - (total + T0[i][i])
