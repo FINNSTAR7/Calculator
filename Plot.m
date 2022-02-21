@@ -2,6 +2,7 @@ clc;
 clear;
 
 A = importdata("data.txt");
+B = importdata("stats.txt");
 probs = importdata("probs.txt");
 
 d_x_vals = A(:, 1);
@@ -40,7 +41,8 @@ text(val, y(2)*0.6125,...
     sprintf([' Median\n' ' x = ' num2str(val)...%'\n y = ' num2str(y_vals1(i)*100,'%.3f') '%%'...
     '\n A = 50%%']), 'VerticalAlignment', 'bottom');
 
-val = averageRun(probs); [~, i] = max(x_vals >= val);
+val = B(1);
+[~, i] = max(x_vals >= val);
 plot([val val], y, 'Color', cmap(i, :));
 text(val, y(2)*0.425,...
     sprintf([' Average\n' ' x = ' num2str(val)...%'\n y = ' num2str(y_vals1(i)*100,'%.3f') '%%'...
@@ -82,7 +84,7 @@ plot([val val], [0 2], 'Color', cmap(i, :));
 [~, i] = max(y_vals2 >= 0.5); val = x_vals(i);
 plot([val val], [0 2], 'Color', cmap(i, :));
 
-val = averageRun(probs); [~, i] = max(x_vals >= val);
+val = B(1); [~, i] = max(x_vals >= val);
 plot([val val], [0 2], 'Color', cmap(i, :));
 
 [~, i] = max(y_vals2 >= 0.99); val = x_vals(i);
@@ -95,24 +97,3 @@ plot([val val], [0 2], 'Color', cmap(i, :));
 plot([val val], [0 2], 'Color', cmap(i, :));
 set(gca, 'YLim', [0 1], 'Clipping', 'off');
 hold off;
-
-
-function [runs] = averageRun(varargin)
-probs = cell2mat(varargin); sumP = sum(probs);
-if sumP <= 0
-    runs = 0;
-    return
-elseif sumP > 1
-    probs = probs/sumP;
-    sumP = 1;
-end
-
-runs = 1;
-for i = 1:length(probs)
-    probArray = probs; probArray(i) = [];
-    run = averageRun(probArray);
-    runs = runs + probs(i)*run;
-end
-
-runs = runs/sumP;
-end
